@@ -1,25 +1,23 @@
-const express = require('express')
+const express = require("express");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const {
+  getContactsCtrl,
+  addContactCtrl,
+  removeContactCtrl,
+} = require("../../controllers/contactsControllers");
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const validateContact = require("../../middlewares/validation/contactValidation");
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", getContactsCtrl);
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", validateContact, addContactCtrl);
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+// дописати мідлвару на валідність id;
 
-module.exports = router
+router.delete("/:contactId", removeContactCtrl);
+
+router.put("/:contactId");
+
+module.exports = router;

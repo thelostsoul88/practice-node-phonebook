@@ -7,7 +7,7 @@ const contactSchema = new Schema(
       required: true,
     },
     number: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
@@ -18,4 +18,4 @@ const contactSchema = new Schema(
 
 const Contact = model("contact", contactSchema);
 
-module.exports = contactSchema;
+module.exports = Contact;
