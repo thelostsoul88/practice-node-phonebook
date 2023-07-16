@@ -1,7 +1,9 @@
 const User = require("../db/models/userModel");
+const fs = require("fs/promises");
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
-const { JWT_KEY, JWT_EXPIRESIN } = process.env;
+const { JWT_KEY } = process.env;
+const path = require("path");
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -63,7 +65,7 @@ const login = async (req, res) => {
   };
   const token = jwt.sign(payload, JWT_KEY);
   await User.findByIdAndUpdate(user._id, { token });
-  res.status(200).json({
+  res.json({
     user: {
       name: user.name,
       email,
@@ -80,10 +82,36 @@ const logout = async (req, res) => {
 };
 
 const current = async (req, res) => {
-  console.log(req.user);
   const { email, name, avatar } = req.user;
 
-  res.status(200).json({ user: { name, email, avatar } });
+  res.json({ name, email, avatar } );
 };
 
-module.exports = { register, login, logout, current };
+const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    res.status(400).json({
+      message: "File is not upload",
+    });
+  }
+
+  const { _id } = req.user;
+  const { path: tmpPath, originalname } = req.file;
+
+  const fileName = `${_id}_${originalname}`;
+
+  const avatarDir = path.join(__dirname, "../public/avatars");
+
+  const resultUrl = path.join(avatarDir, fileName);
+
+  await fs.rename(tmpPath, resultUrl);
+
+  const avatarUrl = path.join("avatars", fileName);
+
+  await User.findByIdAndUpdate(_id, { avatar: avatarUrl });
+
+  res.json({
+    avatar: avatarUrl,
+  });
+};
+
+module.exports = { register, login, logout, current, updateAvatar };

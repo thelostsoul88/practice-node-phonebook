@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const contactSchema = Joi.object({
-  name: Joi.string().required().trim().min(2).max(10),
+  name: Joi.string().required().trim(),
   number: Joi.string().required().trim(),
 });
 
